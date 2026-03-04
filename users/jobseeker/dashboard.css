@@ -277,7 +277,6 @@
   align-items: center;
   justify-content: center;
   z-index: 50;
-  backdrop-blur: 4px;
 }
 
 .job-modal-content {
@@ -453,7 +452,6 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  backdrop-blur: 4px;
 }
 
 .custom-alert-content {
