@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Company Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#407bff",
+              secondary: "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans antialiased">
+    <div
+      id="sidebarOverlay"
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity"
+    ></div>
+
+    <div class="flex h-screen overflow-hidden">
+      <aside
+        id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-secondary text-white flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex"
+      >
+        <div
+          class="h-16 flex items-center justify-between px-4 border-b border-gray-700"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg"
+            >
+              J
+            </div>
+            <span class="text-2xl font-bold text-white tracking-tight"
+              >JobPortal</span
+            >
+          </div>
+          <button
+            id="closeSidebar"
+            class="md:hidden text-gray-400 hover:text-white"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <nav class="flex-1 px-2 py-6 space-y-2">
+          <a
+            href="dashboard.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-chart-line w-6"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+          <a
+            href="jobseekers.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-users w-6"></i>
+            <span>Job Seekers</span>
+          </a>
+          <a
+            href="companies.html"
+            class="flex items-center px-4 py-3 bg-primary rounded-lg text-white shadow-lg shadow-blue-900/50"
+          >
+            <i class="fas fa-building w-6"></i>
+            <span>Companies</span>
+          </a>
+          <a
+            href="jobs.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-briefcase w-6"></i>
+            <span>Jobs</span>
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-700">
+          <button
+            id="logoutBtn"
+            class="flex items-center w-full px-4 py-2 text-red-400 hover:bg-gray-700 rounded-lg transition"
+          >
+            <i class="fas fa-sign-out-alt w-6"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="flex-1 flex flex-col overflow-y-auto">
+        <header
+          class="h-16 bg-white shadow-sm flex items-center justify-between px-6 sticky top-0 z-10"
+        >
+          <div class="flex items-center gap-4">
+            <button
+              id="openSidebar"
+              class="md:hidden text-gray-600 focus:outline-none"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 class="text-lg md:text-xl font-bold text-gray-800">
+              Company Management
+            </h2>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold"
+              >
+                A
+              </div>
+              <span class="text-sm font-medium text-gray-700 hidden sm:block"
+                >Admin</span
+              >
+            </div>
+          </div>
+        </header>
+
+        <main class="p-4 md:p-6">
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
+          >
+            <div class="relative w-full max-w-md">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by Company Name or Industry..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white shadow-sm"
+              />
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            <div class="text-sm text-gray-500">
+              Total Companies:
+              <span id="total-count" class="font-bold text-gray-800">0</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead
+                  class="bg-gray-50 text-gray-600 text-xs uppercase font-semibold"
+                >
+                  <tr>
+                    <th class="px-6 py-3">Company Name</th>
+                    <th class="px-6 py-3">Industry / Size</th>
+                    <th class="px-6 py-3">Location</th>
+                    <th class="px-6 py-3">Jobs Posted</th>
+                    <th class="px-6 py-3">Joined Date</th>
+                    <th class="px-6 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="companies-table-body"
+                  class="text-gray-700 text-sm divide-y divide-gray-100"
+                >
+                  <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                      <i class="fas fa-spinner fa-spin mr-2"></i> Loading
+                      companies...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div
+      id="companyModal"
+      class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[60] backdrop-blur-md p-4"
+    >
+      <div
+        class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 relative"
+        id="modalContent"
+      >
+        <button
+          onclick="closeModal()"
+          class="absolute top-4 right-4 bg-white/80 hover:bg-white p-2 rounded-full shadow-sm z-10 transition"
+        >
+          <i class="fas fa-times text-gray-600"></i>
+        </button>
+
+        <div
+          class="h-24 md:h-32 bg-gradient-to-r from-blue-600 to-purple-600"
+        ></div>
+
+        <div class="px-6 md:px-8 pb-8 -mt-12 relative">
+          <div
+            class="w-20 h-20 md:w-24 md:h-24 bg-white rounded-xl p-1 shadow-lg mb-4"
+          >
+            <div
+              id="comp-logo"
+              class="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center text-3xl font-bold text-gray-500"
+            >
+              C
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4"
+          >
+            <div>
+              <h2
+                class="text-xl md:text-2xl font-bold text-gray-900"
+                id="comp-name"
+              >
+                Company Name
+              </h2>
+              <p class="text-gray-500" id="comp-industry">Industry</p>
+              <div
+                class="mt-2 flex flex-wrap items-center gap-4 text-xs md:text-sm text-gray-600"
+              >
+                <span id="comp-phone"
+                  ><i class="fas fa-phone mr-1"></i> ...</span
+                >
+                <span id="comp-email"
+                  ><i class="fas fa-envelope mr-1"></i> ...</span
+                >
+              </div>
+            </div>
+            <a
+              id="comp-email-link"
+              href="#"
+              target="_blank"
+              class="w-full md:w-auto text-center px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md hover:bg-blue-600 transition"
+              >Contact</a
+            >
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <span class="text-xs font-bold text-gray-400 uppercase"
+                >Location</span
+              >
+              <p class="font-medium text-gray-800" id="comp-location">N/A</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+              <span class="text-xs font-bold text-gray-400 uppercase"
+                >Company Size</span
+              >
+              <p class="font-medium text-gray-800" id="comp-size">N/A</p>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+              <span class="text-xs font-bold text-blue-400 uppercase"
+                >Active Jobs</span
+              >
+              <p class="font-bold text-blue-700 text-lg" id="comp-jobs">0</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gray-50 px-8 py-4 border-t border-gray-100 flex justify-end"
+        >
+          <button
+            onclick="closeModal()"
+            class="w-full md:w-auto px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let allCompanies = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- RESPONSIVE SIDEBAR LOGIC ---
+        const sidebar = document.getElementById("sidebar");
+        const openSidebarBtn = document.getElementById("openSidebar");
+        const closeSidebarBtn = document.getElementById("closeSidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        const toggleSidebar = () => {
+          sidebar.classList.toggle("-translate-x-full");
+          sidebarOverlay.classList.toggle("hidden");
+          document.body.classList.toggle("overflow-hidden");
+        };
+
+        if (openSidebarBtn)
+          openSidebarBtn.addEventListener("click", toggleSidebar);
+        if (closeSidebarBtn)
+          closeSidebarBtn.addEventListener("click", toggleSidebar);
+        if (sidebarOverlay)
+          sidebarOverlay.addEventListener("click", toggleSidebar);
+
+        // --- LOAD DATA ---
+        loadCompanies();
+
+        // Search Listener
+        document
+          .getElementById("searchInput")
+          .addEventListener("keyup", (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allCompanies.filter(
+              (comp) =>
+                (comp.company_name &&
+                  comp.company_name.toLowerCase().includes(term)) ||
+                (comp.industry && comp.industry.toLowerCase().includes(term)),
+            );
+            renderTable(filtered);
+          });
+
+        // Logout
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            if (confirm("Are you sure you want to logout?")) {
+              await fetch("../api/logout.php");
+              window.location.href = "login.html";
+            }
+          });
+      });
+
+      async function loadCompanies() {
+        try {
+          const res = await fetch("../api/admin/companies.php");
+          const response = await res.json();
+
+          if (response.status) {
+            allCompanies = response.data;
+            document.getElementById("total-count").innerText =
+              allCompanies.length;
+            renderTable(allCompanies);
+          } else {
+            document.getElementById("companies-table-body").innerHTML =
+              `<tr><td colspan="6" class="px-6 py-4 text-center">No companies found.</td></tr>`;
+          }
+        } catch (err) {
+          console.error("Error:", err);
+          document.getElementById("companies-table-body").innerHTML =
+            `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Failed to load data.</td></tr>`;
+        }
+      }
+
+      function openCompanyModal(index) {
+        const comp = allCompanies[index];
+        if (!comp) return;
+
+        document.getElementById("comp-name").innerText = comp.company_name;
+        document.getElementById("comp-industry").innerText =
+          comp.industry || "Industry N/A";
+        document.getElementById("comp-location").innerText =
+          comp.location || "Remote";
+        document.getElementById("comp-size").innerText =
+          comp.company_size || "N/A";
+        document.getElementById("comp-jobs").innerText = comp.job_count || "0";
+        document.getElementById("comp-email").innerHTML =
+          `<i class="fas fa-envelope mr-1"></i> ${comp.email}`;
+        document.getElementById("comp-phone").innerHTML = comp.mobile
+          ? `<i class="fas fa-phone mr-1"></i> ${comp.mobile}`
+          : `<span class="text-gray-400 italic">No mobile</span>`;
+        document.getElementById("comp-email-link").href =
+          `mailto:${comp.email}`;
+        document.getElementById("comp-logo").innerText = comp.company_name
+          ? comp.company_name.charAt(0).toUpperCase()
+          : "C";
+
+        toggleModal(true);
+      }
+
+      async function deleteCompany(userId) {
+        if (
+          !confirm(
+            "Are you sure? This will delete the company account and ALL their posted jobs. This cannot be undone.",
+          )
+        )
+          return;
+
+        try {
+          const res = await fetch("../api/admin/delete_user.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: userId }),
+          });
+          const result = await res.json();
+          if (result.status) {
+            alert("Company Deleted");
+            loadCompanies();
+          } else {
+            alert(result.message);
+          }
+        } catch (err) {
+          alert("Server Error");
+        }
+      }
+
+      function toggleModal(show) {
+        const modal = document.getElementById("companyModal");
+        const content = document.getElementById("modalContent");
+        if (show) {
+          modal.classList.remove("hidden");
+          setTimeout(() => {
+            content.classList.remove("scale-95", "opacity-0");
+            content.classList.add("scale-100", "opacity-100");
+          }, 10);
+        } else {
+          content.classList.remove("scale-100", "opacity-100");
+          content.classList.add("scale-95", "opacity-0");
+          setTimeout(() => modal.classList.add("hidden"), 300);
+        }
+      }
+
+      function closeModal() {
+        toggleModal(false);
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById("companies-table-body");
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No matching companies found.</td></tr>`;
+          return;
+        }
+
+        data.forEach((comp, index) => {
+          const initial = comp.company_name
+            ? comp.company_name.charAt(0).toUpperCase()
+            : "C";
+          const bgColors = [
+            "bg-red-100 text-red-600",
+            "bg-blue-100 text-blue-600",
+            "bg-green-100 text-green-600",
+            "bg-purple-100 text-purple-600",
+            "bg-yellow-100 text-yellow-600",
+          ];
+          const randomColor = bgColors[index % bgColors.length];
+
+          const tr = document.createElement("tr");
+          tr.className =
+            "hover:bg-gray-50 transition border-b border-gray-100 group";
+          tr.innerHTML = `
+                <td class="px-6 py-4 cursor-pointer" onclick="openCompanyModal(${index})">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg ${randomColor} flex items-center justify-center font-bold text-lg shadow-sm">
+                            ${initial}
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-800 group-hover:text-primary transition">${comp.company_name}</div>
+                            <div class="text-xs text-gray-400">${comp.email}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="text-gray-700 font-medium text-xs md:text-sm">${comp.industry || "N/A"}</div>
+                    <div class="text-xs text-gray-400">${comp.company_size || "Size N/A"}</div>
+                </td>
+                <td class="px-6 py-4 text-gray-600 text-xs md:text-sm">
+                    <i class="fas fa-map-marker-alt text-gray-300 mr-1"></i> ${comp.location || "Remote"}
+                </td>
+                <td class="px-6 py-4">
+                    <span class="bg-blue-50 text-blue-700 py-1 px-3 rounded-md text-[10px] md:text-xs font-bold border border-blue-100">
+                        ${comp.job_count} Active Jobs
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-gray-500 text-xs">${new Date(comp.created_at).toLocaleDateString()}</td>
+                <td class="px-6 py-4 text-right">
+                    <button onclick="openCompanyModal(${index})" class="text-blue-400 hover:text-blue-600 transition p-2" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button onclick="deleteCompany(${comp.user_id})" class="text-gray-400 hover:text-red-500 transition p-2" title="Delete Company">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
+          tbody.appendChild(tr);
+        });
+      }
+    </script>
+  </body>
+</html>

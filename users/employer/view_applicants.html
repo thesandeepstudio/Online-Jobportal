@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Applications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#407bff" } } },
+      };
+    </script>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg"
+              >
+                J
+              </div>
+              <span class="text-2xl font-bold text-gray-800 tracking-tight"
+                >JobPortal</span
+              >
+            </div>
+            <div class="hidden md:flex ml-10 space-x-8">
+              <a
+                href="dashboard.html"
+                class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium"
+                >Dashboard</a
+              >
+              <a
+                href="post_job.html"
+                class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium"
+                >Post a Job</a
+              >
+              <!-- ACTIVE LINK -->
+              <a
+                href="applications.html"
+                class="text-gray-900 border-b-2 border-primary px-1 pt-1 text-sm font-medium"
+                >Applications</a
+              >
+            </div>
+          </div>
+          <button id="logoutBtn" class="text-red-500 font-medium">
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">
+        Select a Job to View Applicants
+      </h2>
+
+      <!-- GRID OF JOBS -->
+      <div
+        id="jobsGrid"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <!-- JS will inject cards here -->
+        <p class="text-gray-500 col-span-3 text-center py-10">
+          Loading jobs...
+        </p>
+      </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="view_applicants.js"></script>
+  </body>
+</html>

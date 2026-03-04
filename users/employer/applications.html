@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Applications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { primary: '#407bff' } } } }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-primary">Employer Panel</h1>
+                    <div class="hidden md:flex ml-10 space-x-8">
+                        <a href="dashboard.html" class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium">Dashboard</a>
+                        <a href="post_job.html" class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium">Post a Job</a>
+                        <a href="applications.html" class="text-gray-900 border-b-2 border-primary px-1 pt-1 text-sm font-medium">Applications</a>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="text-red-500 font-medium hover:text-red-700">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Your Job Postings</h2>
+        <div id="jobsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <p class="text-gray-500 col-span-3 text-center py-10">Loading jobs...</p>
+        </div>
+    </div>
+
+    <div id="appModal" class="fixed inset-0 bg-gray-900 bg-opacity-40 hidden flex items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="bg-gray-50 px-8 py-5 border-b border-gray-100 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800" id="modal-job-title">Job Title</h3>
+                    <p class="text-sm text-gray-500 mt-1">Manage Candidates</p>
+                </div>
+                <button onclick="closeModal('appModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+            <div class="px-8 flex space-x-6 text-sm font-medium text-gray-500 overflow-x-auto bg-gray-50 border-b border-gray-100">
+                <button onclick="filterApplicants('all')" id="tab-all" class="pb-3 border-b-2 border-primary text-primary transition">All</button>
+                <button onclick="filterApplicants('applied')" id="tab-applied" class="pb-3 border-b-2 border-transparent hover:text-gray-700 transition">New</button>
+                <button onclick="filterApplicants('interview')" id="tab-interview" class="pb-3 border-b-2 border-transparent hover:text-gray-700 transition">Interview</button>
+                <button onclick="filterApplicants('hired')" id="tab-hired" class="pb-3 border-b-2 border-transparent hover:text-gray-700 transition">Hired</button>
+                <button onclick="filterApplicants('rejected')" id="tab-rejected" class="pb-3 border-b-2 border-transparent hover:text-gray-700 transition">Rejected</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-0 bg-white" id="modal-body-container">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Candidate</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-400 uppercase">Status</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-400 uppercase">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+                <div id="modalEmptyState" class="hidden flex flex-col items-center justify-center py-16 text-center">
+                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4"><i class="fas fa-users-slash text-gray-300 text-2xl"></i></div>
+                    <p class="text-gray-500 font-medium">No applicants found here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[60] backdrop-blur-md">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh] relative">
+            <button onclick="closeModal('profileModal')" class="absolute top-4 right-4 bg-white/80 hover:bg-white p-2 rounded-full shadow-sm z-10">
+                <i class="fas fa-times text-gray-600"></i>
+            </button>
+            <div class="flex-1 overflow-y-auto">
+                <div class="h-32 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+                <div class="px-8 pb-8 -mt-12 relative">
+                    <div class="w-24 h-24 bg-white rounded-full p-1 shadow-lg mb-4">
+                        <div id="prof-avatar-initial" class="w-full h-full bg-gray-100 rounded-full flex items-center justify-center text-3xl font-bold text-gray-400">U</div>
+                        <img id="prof-avatar-img" class="w-full h-full rounded-full object-cover hidden">
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900" id="prof-name">Name</h2>
+                    <p class="text-gray-500 mb-6" id="prof-headline">Headline</p>
+                    
+                    <div class="flex gap-3 mb-6">
+                        <a id="prof-email-link" href="#" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-600 border border-blue-200 text-sm font-bold rounded-lg hover:bg-blue-100 transition"><i class="far fa-envelope mr-2"></i> Contact via Email</a>
+                        <a id="prof-resume-link" href="#" target="_blank" class="hidden inline-flex items-center px-4 py-2 bg-purple-50 text-purple-600 border border-purple-200 text-sm font-bold rounded-lg hover:bg-purple-100 transition"><i class="fas fa-file-download mr-2"></i> Download Resume</a>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 p-4 rounded-xl"><span class="text-xs font-bold text-gray-400 uppercase">Experience</span><p class="font-medium text-gray-800" id="prof-exp">N/A</p></div>
+                        <div class="bg-gray-50 p-4 rounded-xl"><span class="text-xs font-bold text-gray-400 uppercase">Education</span><p class="font-medium text-gray-800" id="prof-edu">N/A</p></div>
+                    </div>
+                    <div class="mb-6"><span class="text-xs font-bold text-gray-400 uppercase">Bio</span><p class="text-gray-600 mt-1 text-sm" id="prof-bio">...</p></div>
+                    <div><span class="text-xs font-bold text-gray-400 uppercase block mb-2">Skills</span><div class="flex flex-wrap gap-2" id="prof-skills"></div></div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-8 py-4 border-t border-gray-100 flex justify-between items-center shrink-0">
+                <span class="text-xs font-bold text-gray-400 uppercase">Decision</span>
+                <div class="flex gap-3" id="action-buttons-container">
+                    <button onclick="submitDecision('interview')" id="btn-interview" class="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-sm font-bold">Interview</button>
+                    <button onclick="submitDecision('hired')" id="btn-hire" class="px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded-lg text-sm font-bold shadow-md">Hire</button>
+                    <button onclick="submitDecision('rejected')" id="btn-reject" class="px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-sm font-bold">Reject</button>
+                </div>
+                <div id="status-label" class="hidden font-bold px-4 py-2 rounded-lg text-sm cursor-default"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scheduleModal" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[70] backdrop-blur-md">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-300" id="scheduleContent">
+            <h3 class="text-xl font-bold text-gray-800 mb-2" id="schedule-title">Schedule</h3>
+            <p class="text-gray-500 text-sm mb-4" id="schedule-desc">Select date...</p>
+            
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Date & Time</label>
+            <input type="datetime-local" id="schedule-date" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none text-gray-700 mb-4">
+            
+            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Message (Optional)</label>
+            <textarea id="schedule-msg" rows="2" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none text-sm" placeholder="Additional instructions..."></textarea>
+
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('scheduleModal')" class="flex-1 px-4 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 rounded-lg font-bold">Cancel</button>
+                <button onclick="confirmAction()" id="schedule-btn" class="flex-1 px-4 py-2 bg-primary text-white hover:bg-blue-600 rounded-lg font-bold shadow-md">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentApplicants = [];
+        let currentJobId = null;
+        let currentJobTitle = "";
+        let currentTab = 'all';
+        let selectedAppId = null; 
+        let pendingAction = "";
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById("logoutBtn").addEventListener("click", async () => {
+                if(confirm("Logout?")) await fetch("../../api/logout.php").then(() => window.location.href = "../../auth/login.html");
+            });
+            loadJobs();
+        });
+
+        // 1. LOAD JOBS
+        async function loadJobs() {
+            try {
+                const res = await fetch("../../api/jobs/list_employer.php");
+                const result = await res.json();
+                const grid = document.getElementById("jobsGrid");
+                grid.innerHTML = "";
+
+                if (result.status && result.data.length > 0) {
+                    result.data.forEach(job => {
+                        const hasApplicants = job.applicant_count > 0;
+                        const btnClass = hasApplicants ? "bg-primary text-white hover:bg-blue-600 shadow-md" : "bg-gray-100 text-gray-400 cursor-not-allowed";
+                        const clickAction = hasApplicants ? `onclick="openApplicantsModal(${job.id}, '${job.title.replace(/'/g, "\\'")}')"` : "";
+                        const opacity = job.status === 'closed' ? 'opacity-60' : 'opacity-100';
+
+                        grid.innerHTML += `
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition ${opacity}">
+                                <h3 class="font-bold text-gray-800 text-lg">${job.title}</h3>
+                                <p class="text-sm text-gray-500 mb-4">Posted: ${new Date(job.created_at).toLocaleDateString()}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-2xl font-bold ${hasApplicants ? 'text-primary' : 'text-gray-300'}">${job.applicant_count} Applicants</span>
+                                    <button ${clickAction} class="px-4 py-2 rounded-md text-sm font-bold transition ${btnClass}">View List</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    grid.innerHTML = `<p class="col-span-3 text-center text-gray-500 py-10">No jobs posted.</p>`;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        // 2. OPEN LIST MODAL
+        async function openApplicantsModal(jobId, jobTitle) {
+            currentJobId = jobId;
+            currentJobTitle = jobTitle;
+            document.getElementById("modal-job-title").innerText = jobTitle;
+            toggleModal("appModal", true);
+            filterApplicants('all');
+
+            try {
+                const res = await fetch(`../../api/jobs/get_applicants.php?job_id=${jobId}`);
+                const result = await res.json();
+                if (result.status) {
+                    currentApplicants = result.data;
+                    filterApplicants(currentTab);
+                } else {
+                    currentApplicants = [];
+                    renderTable([]);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function filterApplicants(status) {
+            currentTab = status;
+            document.querySelectorAll("[id^='tab-']").forEach(btn => {
+                btn.className = "pb-3 border-b-2 border-transparent hover:text-gray-700 transition";
+                btn.classList.remove("text-primary", "border-primary");
+            });
+            document.getElementById(`tab-${status}`).className = "pb-3 border-b-2 border-primary text-primary transition";
+
+            if (status === 'all') renderTable(currentApplicants);
+            else renderTable(currentApplicants.filter(app => app.status === status));
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById("modalTableBody");
+            const empty = document.getElementById("modalEmptyState");
+            tbody.innerHTML = "";
+
+            if (data.length > 0) {
+                empty.classList.add("hidden");
+                data.forEach(app => {
+                    let avatarHtml = app.profile_pic 
+                        ? `<img src="../../api/${app.profile_pic}" class="w-10 h-10 rounded-full object-cover border border-gray-200">`
+                        : `<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">${app.first_name.charAt(0)}</div>`;
+
+                    let statusBadge = `<span class="px-2 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-800 uppercase">New</span>`;
+                    if(app.status === 'hired') statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200">HIRED</span>`;
+                    else if(app.status === 'interview') statusBadge = `<span class="px-2 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">Interview</span>`;
+                    else if(app.status === 'rejected') statusBadge = `<span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">Rejected</span>`;
+
+                    const row = `
+                        <tr onclick="openProfileModal(${app.user_id}, ${app.app_id}, '${app.status}', '${app.resume_path || ''}')" class="hover:bg-blue-50 transition border-b border-gray-50 last:border-0 cursor-pointer">
+                            <td class="px-6 py-4 align-top">
+                                <div class="flex items-center gap-3">${avatarHtml}<div><div class="text-sm font-bold text-gray-800">${app.first_name} ${app.last_name}</div><div class="text-xs text-gray-500">${app.email}</div></div></div>
+                            </td>
+                            <td class="px-6 py-4 align-top">${statusBadge}<div class="text-xs text-gray-400 mt-1">${new Date(app.applied_at).toLocaleDateString()}</div></td>
+                            <td class="px-6 py-4 align-top text-right text-xs text-primary font-bold hover:underline">Review</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                empty.classList.remove("hidden");
+            }
+        }
+
+        // 3. OPEN PROFILE MODAL
+        async function openProfileModal(userId, appId, currentStatus, resumePath) {
+            if (!userId) return;
+            selectedAppId = appId; 
+
+            const btnContainer = document.getElementById("action-buttons-container");
+            const label = document.getElementById("status-label");
+
+            if (currentStatus === 'hired') {
+                btnContainer.classList.add("hidden");
+                label.classList.remove("hidden");
+                label.innerText = "✓ Candidate Hired";
+                label.className = "px-4 py-2 bg-green-100 text-green-700 border border-green-200 rounded-lg text-sm font-bold cursor-default";
+            } else if (currentStatus === 'rejected') {
+                btnContainer.classList.add("hidden");
+                label.classList.remove("hidden");
+                label.innerText = "✕ Application Rejected";
+                label.className = "px-4 py-2 bg-red-100 text-red-700 border border-red-200 rounded-lg text-sm font-bold cursor-default";
+            } else {
+                btnContainer.classList.remove("hidden");
+                label.classList.add("hidden");
+            }
+
+            // --- TOGGLE RESUME BUTTON ---
+            const resumeBtn = document.getElementById("prof-resume-link");
+            if (resumePath && resumePath.trim() !== "") {
+                resumeBtn.href = "../../api/" + resumePath;
+                resumeBtn.classList.remove("hidden");
+            } else {
+                resumeBtn.classList.add("hidden");
+            }
+
+            toggleModal("profileModal", true);
+            
+            try {
+                const res = await fetch(`../../api/users/get_profile.php?id=${userId}`);
+                const result = await res.json();
+                if (result.status) {
+                    const p = result.data;
+                    document.getElementById("prof-name").innerText = `${p.first_name} ${p.last_name}`;
+                    document.getElementById("prof-headline").innerText = p.bio ? "Candidate" : "Job Seeker";
+                    document.getElementById("prof-exp").innerText = p.experience || "N/A";
+                    document.getElementById("prof-edu").innerText = p.education || "N/A";
+                    document.getElementById("prof-bio").innerText = p.bio || "No bio";
+                    
+                    document.getElementById("prof-email-link").href = `https://mail.google.com/mail/?view=cm&fs=1&to=${p.email}`;
+                    document.getElementById("prof-email-link").target = "_blank";
+
+                    const skillsContainer = document.getElementById("prof-skills");
+                    skillsContainer.innerHTML = "";
+                    if(p.skills) {
+                        p.skills.split(',').forEach(s => skillsContainer.innerHTML += `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-300 mr-1">${s.trim()}</span>`);
+                    }
+
+                    if (p.profile_pic) {
+                        document.getElementById("prof-avatar-img").src = "../../api/" + p.profile_pic;
+                        document.getElementById("prof-avatar-img").classList.remove("hidden");
+                        document.getElementById("prof-avatar-initial").classList.add("hidden");
+                    } else {
+                        document.getElementById("prof-avatar-initial").innerText = p.first_name.charAt(0);
+                        document.getElementById("prof-avatar-img").classList.add("hidden");
+                        document.getElementById("prof-avatar-initial").classList.remove("hidden");
+                    }
+                }
+            } catch(err) { console.error(err); }
+        }
+
+        // 4. SUBMIT DECISION CLICK
+        function submitDecision(status) {
+            pendingAction = status;
+
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const minDateTime = now.toISOString().slice(0, 16);
+            document.getElementById("schedule-date").min = minDateTime;
+
+            if (status === 'interview') {
+                document.getElementById("schedule-title").innerText = "Schedule Interview";
+                document.getElementById("schedule-desc").innerText = "Select a date and time for the candidate interview.";
+                document.getElementById("schedule-btn").innerText = "Send Invite";
+                document.getElementById("schedule-btn").className = "flex-1 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold shadow-md";
+                toggleModal("scheduleModal", true);
+            } 
+            else if (status === 'hired') {
+                document.getElementById("schedule-title").innerText = "Confirm Hiring";
+                document.getElementById("schedule-desc").innerText = "Select joining date. Note: This will REJECT all other applicants and CLOSE the job post.";
+                document.getElementById("schedule-btn").innerText = "Confirm Hire";
+                document.getElementById("schedule-btn").className = "flex-1 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg font-bold shadow-md";
+                toggleModal("scheduleModal", true);
+            } 
+            else {
+                if(confirm(`Mark as ${status.toUpperCase()}?`)) {
+                    performStatusUpdate(status);
+                }
+            }
+        }
+
+        // 5. CONFIRM ACTION
+        function confirmAction() {
+            const date = document.getElementById("schedule-date").value;
+            const msg = document.getElementById("schedule-msg").value;
+            
+            if (!date) { alert("Please select a date and time."); return; }
+            
+            const customMessage = `Scheduled: <b>${date.replace('T', ' at ')}</b><br>${msg}`;
+            performStatusUpdate(pendingAction, customMessage);
+        }
+
+        // 6. API CALL
+        async function performStatusUpdate(status, message = null) {
+            if(!selectedAppId) return;
+
+            try {
+                const payload = { app_id: selectedAppId, status: status };
+                if(message) payload.message = message;
+
+                const res = await fetch("../../api/jobs/update_application.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if (result.status) {
+                    alert(result.message);
+                    closeModal('scheduleModal');
+                    closeModal('profileModal');
+                    
+                    const resFetch = await fetch(`../../api/jobs/get_applicants.php?job_id=${currentJobId}&t=${new Date().getTime()}`);
+                    const resultFetch = await resFetch.json();
+                    
+                    if(resultFetch.status) {
+                        currentApplicants = resultFetch.data;
+                        filterApplicants(currentTab);
+                    }
+                } else {
+                    alert("Error: " + result.message);
+                }
+            } catch (err) { console.error(err); alert("Server Error"); }
+        }
+
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id);
+            let content;
+            if (id === 'appModal') content = modal.querySelector('div.max-w-3xl');
+            else if (id === 'profileModal') content = modal.querySelector('div.max-w-2xl');
+            else if (id === 'scheduleModal') content = modal.querySelector('div.max-w-md');
+            else content = modal.firstElementChild;
+
+            if (show) {
+                modal.classList.remove("hidden");
+                setTimeout(() => { content.classList.remove("scale-95", "opacity-0"); content.classList.add("scale-100", "opacity-100"); }, 10);
+            } else {
+                content.classList.remove("scale-100", "opacity-100"); content.classList.add("scale-95", "opacity-0");
+                setTimeout(() => modal.classList.add("hidden"), 300);
+            }
+        }
+        function closeModal(id) { toggleModal(id, false); }
+    </script>
+</body>
+</html>

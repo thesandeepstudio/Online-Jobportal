@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Applications | JobPortal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#407bff" } } },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="my_applications.css" />
+    <link rel="stylesheet" href="../../style.css" />
+    <style>
+      /* Mobile Menu Smooth Transition */
+      #mobileMenu {
+        transition: max-height 0.3s ease-in-out;
+        max-height: 0;
+        overflow: hidden;
+      }
+      #mobileMenu.open {
+        max-height: 350px; /* Adjust based on content height */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- NAVBAR SECTION START -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Left side -->
+        <div class="nav-left">
+          <!-- Mobile menu button -->
+          <button id="mobileMenuBtn" class="mobile-btn">
+            <i class="fas fa-bars"></i>
+          </button>
+
+          <!-- Logo -->
+          <div class="logo-section">
+            <div class="logo-circle">J</div>
+            <span class="logo-text">JobPortal</span>
+          </div>
+
+          <!-- Desktop links -->
+          <div class="desktop-links">
+            <a href="dashboard.html" class="">Find Jobs</a>
+            <a href="my_applications.html" class="active">My Applications</a>
+            <a href="profile.html" class="">Profile</a>
+          </div>
+        </div>
+
+        <!-- Right side -->
+        <div class="nav-right">
+          <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="mobile-menu">
+        <div class="mobile-links">
+          <a href="dashboard.html">Find Jobs</a>
+          <a href="my_applications.html" class="active">My Applications</a>
+          <a href="profile.html">Profile</a>
+          <button id="mobileLogoutBtn" class="logout-mobile">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- NAVBAR SECTION ENDS HERE -->
+
+    <!-- APPLICATION HISTORY SECTION START -->
+    <div class="application-history-container">
+      <!-- Header -->
+      <div class="application-header">
+        <h2>Application History</h2>
+        <span class="application-subtitle">Track your job progress</span>
+      </div>
+
+      <!-- Table Wrapper -->
+      <div class="application-table-wrapper">
+        <table class="application-table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Job Title</th>
+              <th>Applied Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="appTableBody">
+            <tr>
+              <td colspan="4" class="loading-cell">
+                <i class="fas fa-circle-notch fa-spin loading-icon"></i>
+                <p>Loading applications...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- APPLICATION HISTORY SECTION ENDS HERE -->
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // --- 1. RESPONSIVE MENU LOGIC ---
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+
+        if (mobileMenuBtn && mobileMenu) {
+          mobileMenuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("open");
+          });
+
+          // Close menu when clicking outside
+          document.addEventListener("click", (e) => {
+            if (
+              !mobileMenu.contains(e.target) &&
+              !mobileMenuBtn.contains(e.target)
+            ) {
+              mobileMenu.classList.remove("open");
+            }
+          });
+        }
+
+        // --- 2. LOGOUT LOGIC ---
+        const handleLogout = async () => {
+          if (confirm("Are you sure you want to logout?")) {
+            try {
+              await fetch("../../api/logout.php");
+              window.location.href = "../../auth/login.html";
+            } catch (err) {
+              console.error("Logout Error:", err);
+            }
+          }
+        };
+
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", handleLogout);
+        document
+          .getElementById("mobileLogoutBtn")
+          .addEventListener("click", handleLogout);
+
+        // --- 3. DATA FETCHING LOGIC ---
+        try {
+          const res = await fetch("../../api/jobs/my_applications.php");
+          const result = await res.json();
+          const tbody = document.getElementById("appTableBody");
+
+          tbody.innerHTML = ""; // Clear loader
+
+          if (result.status && result.data.length > 0) {
+            result.data.forEach((app) => {
+              // Dynamic Status Styling
+              let statusColor = "bg-yellow-100 text-yellow-800"; // Default: Applied
+              const status = app.status.toLowerCase();
+
+              if (status === "interview")
+                statusColor = "bg-blue-100 text-blue-800";
+              if (status === "rejected")
+                statusColor = "bg-red-100 text-red-800";
+              if (status === "hired")
+                statusColor = "bg-green-100 text-green-800";
+
+              const row = `
+                <tr class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="font-bold text-gray-800">${app.company_name}</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-gray-700">${app.title}</div>
+                    <div class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i>${app.location}</div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-500">
+                    ${new Date(app.applied_at).toLocaleDateString()}
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor} uppercase">
+                      ${app.status}
+                    </span>
+                  </td>
+                </tr>
+              `;
+              tbody.innerHTML += row;
+            });
+          } else {
+            // Empty State
+            tbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="px-6 py-16 text-center text-gray-500">
+                  <div class="mb-3"><i class="fas fa-folder-open text-4xl text-gray-200"></i></div>
+                  <p class="text-lg">No applications found.</p>
+                  <a href="dashboard.html" class="text-primary font-bold hover:underline mt-2 inline-block">
+                    Start searching for jobs
+                  </a>
+                </td>
+              </tr>
+            `;
+          }
+        } catch (err) {
+          console.error("Fetch error:", err);
+          document.getElementById("appTableBody").innerHTML = `
+            <tr>
+              <td colspan="4" class="px-6 py-8 text-center text-red-500">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Failed to load your applications.
+              </td>
+            </tr>
+          `;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post a Job - JobPortal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#407bff" } } },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">J</div>
+              <span class="text-2xl font-bold text-gray-800 tracking-tight">JobPortal</span>
+            </div>
+            <div class="hidden md:flex ml-10 space-x-8">
+              <a href="dashboard.html" class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium">Dashboard</a>
+              <a href="post_job.html" class="text-gray-900 border-b-2 border-primary px-1 pt-1 text-sm font-medium">Post a Job</a>
+              <a href="applications.html" class="text-gray-500 hover:text-gray-700 px-1 pt-1 text-sm font-medium">Applications</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <button id="logoutBtn" onclick="confirmLogout()" class="hidden md:block px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600 focus:outline-none transition">
+              Logout
+            </button>
+            <button id="mobileMenuBtn" class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-lg">
+        <div class="px-4 pt-2 pb-4 space-y-1">
+          <a href="dashboard.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-primary">Dashboard</a>
+          <a href="post_job.html" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-blue-50">Post a Job</a>
+          <a href="applications.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:bg-gray-50 hover:text-primary">Applications</a>
+          <div class="border-t border-gray-100 my-2"></div>
+          <button onclick="confirmLogout()" class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-50">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto mt-10 bg-white p-6 md:p-8 rounded-xl shadow-lg mb-10 mx-4 sm:mx-auto">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">Post a New Job</h2>
+      <form id="postJobForm" class="space-y-6">
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">Job Title</label>
+          <input type="text" id="title" placeholder="e.g. Senior Software Engineer" required class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition" />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Category</label>
+            <select id="category" class="w-full px-4 py-3 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-primary transition">
+              <option value="Accounting">Accounting</option>
+              <option value="IT">IT & Software</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Medical">Medical</option>
+              <option value="Design">Design</option>
+              <option value="Engineering">Engineering</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Job Type</label>
+            <select id="job_type" class="w-full px-4 py-3 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-primary transition">
+              <option value="Full Time">Full Time</option>
+              <option value="Part Time">Part Time</option>
+              <option value="Contract">Contract</option>
+              <option value="Remote">Remote</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Salary Range</label>
+            <input type="text" id="salary" placeholder="e.g. $50k - $70k" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition" />
+          </div>
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">Location</label>
+            <input type="text" id="location" placeholder="e.g. New York, NY" required class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">Description</label>
+          <textarea id="description" rows="5" placeholder="Outline responsibilities, requirements, etc." required class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md transition transform hover:-translate-y-0.5 active:scale-95">
+          Post Job
+        </button>
+      </form>
+    </div>
+
+    <div id="customAlert" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[100] backdrop-blur-sm transition-opacity duration-300">
+      <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 mx-4" id="customAlertContent">
+        <div class="p-6 text-center">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4" id="alertIconContainer">
+            <i class="fas fa-info text-3xl text-primary" id="alertIcon"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2" id="alertTitle">Notification</h3>
+          <p class="text-gray-500 text-sm mb-6" id="alertMessage">Message...</p>
+          <button onclick="closeCustomAlert()" class="w-full bg-primary hover:bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md transition">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="customConfirm" class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[100] backdrop-blur-sm transition-opacity duration-300">
+      <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 mx-4" id="confirmContent">
+        <div class="p-6 text-center">
+          <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-100 mb-4">
+            <i class="fas fa-exclamation-triangle text-3xl text-yellow-600"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-2" id="confirmTitle">Confirm Action</h3>
+          <p class="text-gray-500 text-sm mb-6" id="confirmMessage">Are you sure?</p>
+          <div class="flex gap-3">
+            <button onclick="closeCustomConfirm()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-xl transition">Cancel</button>
+            <button id="confirmBtnAction" class="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold py-3 rounded-xl shadow-md transition">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* --- NAVIGATION LOGIC --- */
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      mobileMenuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+      });
+
+      /* --- MODAL LOGIC --- */
+      function showCustomAlert(title, message, type = "info") {
+        const m = document.getElementById("customAlert"),
+          c = document.getElementById("customAlertContent"),
+          t = document.getElementById("alertTitle"),
+          msg = document.getElementById("alertMessage"),
+          icon = document.getElementById("alertIcon"),
+          ic = document.getElementById("alertIconContainer");
+        
+        t.innerText = title;
+        msg.innerText = message;
+        
+        if (type === "success") {
+          icon.className = "fas fa-check text-3xl text-green-600";
+          ic.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4";
+        } else if (type === "error") {
+          icon.className = "fas fa-times text-3xl text-red-600";
+          ic.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4";
+        } else {
+          icon.className = "fas fa-info text-3xl text-primary";
+          ic.className = "mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 mb-4";
+        }
+
+        m.classList.remove("hidden");
+        setTimeout(() => {
+          c.classList.remove("scale-95", "opacity-0");
+          c.classList.add("scale-100", "opacity-100");
+        }, 10);
+      }
+
+      function closeCustomAlert() {
+        const m = document.getElementById("customAlert"),
+          c = document.getElementById("customAlertContent");
+        c.classList.remove("scale-100", "opacity-100");
+        c.classList.add("scale-95", "opacity-0");
+        setTimeout(() => m.classList.add("hidden"), 300);
+      }
+
+      let confirmCallback = null;
+      function showCustomConfirm(title, message, callback) {
+        confirmCallback = callback;
+        document.getElementById("confirmTitle").innerText = title;
+        document.getElementById("confirmMessage").innerText = message;
+        const m = document.getElementById("customConfirm"),
+          c = document.getElementById("confirmContent");
+        m.classList.remove("hidden");
+        setTimeout(() => {
+          c.classList.remove("scale-95", "opacity-0");
+          c.classList.add("scale-100", "opacity-100");
+        }, 10);
+      }
+
+      function closeCustomConfirm() {
+        const m = document.getElementById("customConfirm"),
+          c = document.getElementById("confirmContent");
+        c.classList.remove("scale-100", "opacity-100");
+        c.classList.add("scale-95", "opacity-0");
+        setTimeout(() => m.classList.add("hidden"), 300);
+        confirmCallback = null;
+      }
+
+      document.getElementById("confirmBtnAction").addEventListener("click", () => {
+        if (confirmCallback) confirmCallback();
+        closeCustomConfirm();
+      });
+
+      function confirmLogout() {
+        showCustomConfirm("Logout", "Are you sure you want to log out?", async () => {
+          await fetch("../../api/logout.php");
+          window.location.href = "../../auth/login.html";
+        });
+      }
+
+      /* --- FORM SUBMISSION --- */
+      document.getElementById("postJobForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        // Button loading state
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Posting...";
+
+        const data = {
+          title: document.getElementById("title").value,
+          category: document.getElementById("category").value,
+          job_type: document.getElementById("job_type").value,
+          salary: document.getElementById("salary").value,
+          location: document.getElementById("location").value,
+          description: document.getElementById("description").value,
+        };
+
+        try {
+          const res = await fetch("../../api/jobs/create.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          const result = await res.json();
+
+          if (result.status) {
+            showCustomAlert("Success!", "Job posted successfully and is pending approval.", "success");
+            setTimeout(() => (window.location.href = "dashboard.html"), 2000);
+          } else {
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+            showCustomAlert("Failed", result.message || "Could not post job.", "error");
+            if (result.message && result.message.includes("Unauthorized")) {
+              window.location.href = "../../auth/login.html";
+            }
+          }
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
+          showCustomAlert("Error", "Server connection failed.", "error");
+        }
+      });
+    </script>
+  </body>
+</html>

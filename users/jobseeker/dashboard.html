@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Seeker Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#407bff" } } },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="stylesheet" href="../../style.css" />
+    <style>
+      .dropdown-enter {
+        transform-origin: top right;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: all 0.1s ease-out;
+      }
+      .dropdown-enter-active {
+        transform: scale(1);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- DASHBOARD NAVBAR SECTION START -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <!-- Left side -->
+        <div class="nav-left">
+          <!-- Logo -->
+          <div class="logo-section">
+            <div class="logo-circle">J</div>
+            <span class="logo-text">JobPortal</span>
+          </div>
+
+          <!-- Desktop links -->
+          <div class="desktop-links">
+            <a href="dashboard.html" class="active">Find Jobs</a>
+            <a href="my_applications.html">My Applications</a>
+            <a href="profile.html">Profile</a>
+          </div>
+        </div>
+
+        <!-- Right side -->
+        <div class="nav-right">
+          <!-- Notifications -->
+          <div class="notif-wrapper">
+            <button id="notifBtn" class="notif-btn">
+              <i class="fas fa-bell"></i>
+              <span id="notifBadge" class="notif-badge"></span>
+            </button>
+
+            <div id="notifDropdown" class="notif-dropdown hidden">
+              <div class="notif-header">
+                <h3>Notifications</h3>
+                <button onclick="markAllRead()">Mark all read</button>
+              </div>
+              <div id="notifList" class="notif-list">
+                <p class="notif-loading">Loading...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Logout -->
+          <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+      </div>
+    </nav>
+    <!-- DASHBOARD NAVBAR SECTION ENDS HERE -->
+
+    <!-- DASHBOARD HERO SECTION START -->
+    <section class="dashboard-hero">
+      <div class="dashboard-hero-container">
+        <h1>Find your dream job</h1>
+        <p>Browse thousands of job openings.</p>
+      </div>
+    </section>
+    <!-- DASHBOARD HERO SECTION ENDS HERE -->
+
+    <!-- LATEST OPPORTUNITIES SECTION START -->
+    <section class="latest-jobs-section">
+      <div class="latest-jobs-container">
+        <div class="latest-jobs-card">
+          <h2>Latest Opportunities</h2>
+
+          <!-- Loading Spinner -->
+          <div id="loading" class="loading-state">
+            <i class="fas fa-circle-notch fa-spin"></i>
+          </div>
+
+          <!-- Job Grid -->
+          <div id="job-grid" class="job-grid hidden">
+            <!-- Dynamically populated job cards go here -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="empty-state hidden">
+            No active jobs found.
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- LATEST OPPORTUNITIES SECTION ENDS HERE -->
+
+    <!-- JOB MODAL SECTION START -->
+    <div id="jobModal" class="job-modal hidden">
+      <div class="job-modal-content" id="modalContent">
+        <!-- Modal Header -->
+        <div class="job-modal-header">
+          <div class="job-modal-title-wrapper">
+            <div class="job-modal-icon" id="modal-icon">C</div>
+            <div>
+              <h3 id="modal-title">Job Title</h3>
+              <p id="modal-company">Company</p>
+            </div>
+          </div>
+          <button onclick="closeModal()" class="job-modal-close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="job-modal-body">
+          <div class="job-modal-grid">
+            <div class="job-modal-item">
+              <span>Location</span>
+              <p id="modal-location">NY</p>
+            </div>
+            <div class="job-modal-item">
+              <span>Salary</span>
+              <p id="modal-salary">$50k</p>
+            </div>
+            <div class="job-modal-item">
+              <span>Type</span>
+              <p id="modal-type">Full Time</p>
+            </div>
+            <div class="job-modal-item">
+              <span>Posted</span>
+              <p id="modal-date">Today</p>
+            </div>
+          </div>
+
+          <div class="job-modal-desc">
+            <span>Description</span>
+            <p id="modal-desc">...</p>
+          </div>
+
+          <div id="resume-upload-container" class="job-modal-resume hidden">
+            <span>Attach Resume (Required)</span>
+            <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" />
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="job-modal-footer">
+          <button onclick="closeModal()">Close</button>
+          <button id="btn-apply">Apply Now</button>
+        </div>
+      </div>
+    </div>
+    <!-- JOB MODAL SECTION ENDS HERE -->
+
+    <!-- CUSTOM ALERT SECTION START -->
+    <div id="customAlert" class="custom-alert hidden">
+      <div class="custom-alert-content" id="customAlertContent">
+        <div class="custom-alert-inner text-center p-6">
+          <div
+            class="alert-icon-container mx-auto mb-4"
+            id="alertIconContainer"
+          >
+            <i class="fas fa-info text-3xl text-primary" id="alertIcon"></i>
+          </div>
+          <h3
+            class="alert-title text-xl font-bold text-gray-900 mb-2"
+            id="alertTitle"
+          >
+            Notification
+          </h3>
+          <p class="alert-message text-gray-500 text-sm mb-6" id="alertMessage">
+            Message...
+          </p>
+          <button onclick="closeCustomAlert()" class="alert-btn w-full">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- CUSTOM ALERT SECTION ENDS HERE -->
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>

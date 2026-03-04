@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Profile | JobPortal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { primary: "#407bff" } } },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="profile.css" />
+    <link rel="stylesheet" href="../../style.css" />
+    <style>
+      /* Mobile Menu Smooth Transition */
+      #mobileMenu {
+        transition: max-height 0.3s ease-in-out;
+        max-height: 0;
+        overflow: hidden;
+      }
+      #mobileMenu.open {
+        max-height: 350px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="container">
+        <div class="nav-inner">
+          <!-- Left section: logo + nav links -->
+          <div class="left-section">
+            <!-- Mobile menu button -->
+            <button id="mobileMenuBtn" class="mobile-btn">
+              <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Logo -->
+            <div class="logo-section">
+              <div class="logo-circle">J</div>
+              <span class="logo-text">JobPortal</span>
+            </div>
+
+            <!-- Desktop nav links -->
+            <div class="desktop-links">
+              <a href="dashboard.html" class="nav-link">Find Jobs</a>
+              <a href="my_applications.html" class="nav-link"
+                >My Applications</a
+              >
+              <a href="profile.html" class="nav-link active">Profile</a>
+            </div>
+          </div>
+
+          <!-- Logout button -->
+          <button id="logoutBtn" onclick="confirmLogout()" class="logout-btn">
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu -->
+      <div id="mobileMenu" class="mobile-menu">
+        <div class="mobile-links">
+          <a href="dashboard.html" class="mobile-link">Find Jobs</a>
+          <a href="my_applications.html" class="mobile-link">My Applications</a>
+          <a href="profile.html" class="mobile-link active">Profile</a>
+          <button onclick="confirmLogout()" class="mobile-link logout-mobile">
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+    <!-- nav bar section ends here -->
+
+    <!-- profile card user details -->
+
+    <div class="container profile-card-wrapper">
+      <div class="profile-card">
+        <!-- Header Banner -->
+        <div class="profile-banner">
+          <div
+            class="avatar-wrapper"
+            onclick="document.getElementById('profilePicInput').click()"
+          >
+            <img id="avatar-img" class="avatar-img hidden" />
+            <div id="avatar-initial-box" class="avatar-initial-box">
+              <span id="avatar-initial">U</span>
+            </div>
+            <div class="avatar-overlay">
+              <i class="fas fa-camera"></i>
+            </div>
+          </div>
+          <input
+            type="file"
+            id="profilePicInput"
+            accept="image/*"
+            class="hidden"
+          />
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+          <!-- Name + Email + Preview -->
+          <div class="profile-header">
+            <div>
+              <h2 id="display-name">Loading...</h2>
+              <p id="display-email">loading@example.com</p>
+            </div>
+            <button id="previewBtn" class="btn btn-outline preview-btn">
+              <i class="far fa-eye"></i> Preview Public Profile
+            </button>
+          </div>
+
+          <hr />
+
+          <!-- Form -->
+          <form id="profileForm" class="profile-form">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" required />
+              </div>
+              <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="bio">Professional Headline / Bio</label>
+              <textarea id="bio" rows="3"></textarea>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="skills">Skills (Comma separated)</label>
+                <input
+                  type="text"
+                  id="skills"
+                  placeholder="React, Node.js, Design..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="experience">Experience</label>
+                <select id="experience">
+                  <option value="Fresher">Fresher</option>
+                  <option value="1-2 Years">1-2 Years</option>
+                  <option value="3-5 Years">3-5 Years</option>
+                  <option value="5+ Years">5+ Years</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="education">Highest Education</label>
+              <input type="text" id="education" />
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="saveBtn" class="btn btn-primary">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- profile card section ends here -->
+
+    <!-- CUSTOM ALERT SECTION START -->
+    <div id="customAlert" class="custom-alert hidden">
+      <div id="customAlertContent" class="custom-alert-content">
+        <div class="custom-alert-inner text-center">
+          <div id="alertIconContainer" class="alert-icon-container">
+            <i id="alertIcon" class="fas fa-info"></i>
+          </div>
+          <h3 id="alertTitle" class="alert-title">Notification</h3>
+          <p id="alertMessage" class="alert-message">Message...</p>
+          <button onclick="closeCustomAlert()" class="alert-btn">OK</button>
+        </div>
+      </div>
+    </div>
+    <!-- CUSTOM ALERT SECTION ENDS HERE -->
+
+    <!-- CUSTOM CONFIRM SECTION START -->
+    <div id="customConfirm" class="custom-confirm hidden">
+      <div id="confirmContent" class="custom-confirm-content">
+        <div class="custom-confirm-inner text-center">
+          <div class="confirm-icon-container">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <h3 id="confirmTitle" class="confirm-title">Logout?</h3>
+          <p id="confirmMessage" class="confirm-message">Are you sure?</p>
+          <div class="confirm-buttons">
+            <button onclick="closeCustomConfirm()" class="btn-cancel">
+              Cancel
+            </button>
+            <button id="confirmBtnAction" class="btn-confirm">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CUSTOM CONFIRM SECTION ENDS HERE -->
+
+    <!-- PROFILE PREVIEW MODAL SECTION START -->
+    <div id="profileModal" class="profile-modal hidden">
+      <div id="profileContent" class="profile-modal-content">
+        <!-- Close Button -->
+        <button onclick="closeModal()" class="modal-close-btn">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <!-- Banner -->
+        <div class="modal-banner"></div>
+
+        <!-- Avatar -->
+        <div class="modal-avatar-wrapper">
+          <div class="modal-avatar-inner">
+            <img id="prev-avatar-img" class="modal-avatar-img hidden" />
+            <div id="prev-avatar-box" class="modal-avatar-placeholder">U</div>
+          </div>
+        </div>
+
+        <!-- Name & Headline -->
+        <div class="modal-header">
+          <h2 id="prev-name">Name</h2>
+          <p id="prev-headline">Job Seeker</p>
+        </div>
+
+        <!-- Experience & Education -->
+        <div class="modal-grid">
+          <div class="modal-card">
+            <span>Experience</span>
+            <p id="prev-exp">N/A</p>
+          </div>
+          <div class="modal-card">
+            <span>Education</span>
+            <p id="prev-edu">N/A</p>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="modal-bio">
+          <span>Bio</span>
+          <p id="prev-bio">No bio.</p>
+        </div>
+
+        <!-- Skills -->
+        <div class="modal-skills">
+          <span>Skills</span>
+          <div id="prev-skills" class="skills-container"></div>
+        </div>
+      </div>
+    </div>
+    <!-- PROFILE PREVIEW MODAL SECTION ENDS HERE -->
+
+    <script src="profile.js"></script>
+  </body>
+</html>

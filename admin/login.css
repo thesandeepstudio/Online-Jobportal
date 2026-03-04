@@ -1,0 +1,133 @@
+/* admin/login.css */
+
+.admin-login-body {
+  background-color: #f3f4f6; /* bg-gray-100 */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", system-ui, sans-serif;
+  margin: 0;
+  padding: 1rem;
+}
+
+.login-card {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 28rem; /* max-w-md */
+  padding: 2.5rem; /* p-10 */
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700;
+  color: #1f2937; /* text-gray-800 */
+  margin: 0;
+}
+
+.login-subtitle {
+  color: #6b7280; /* text-gray-500 */
+  margin-top: 0.5rem;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* space-y-6 */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: block;
+  color: #374151; /* text-gray-700 */
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.form-input:focus {
+  border-color: #407bff; /* focus:border-primary */
+  box-shadow: 0 0 0 2px rgba(64, 123, 255, 0.1); /* focus:ring-blue-100 */
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.pr-10 {
+  padding-right: 2.5rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle:hover {
+  opacity: 1;
+}
+
+.password-toggle img {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.error-text {
+  color: #ef4444; /* text-red-500 */
+  font-size: 0.875rem;
+  text-align: center;
+  font-weight: 500;
+  height: 1.25rem; /* h-5 */
+  margin: 0;
+}
+
+.btn-submit {
+  width: 100%;
+  background-color: #407bff; /* bg-primary */
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  font-size: 1rem;
+}
+
+.btn-submit:hover {
+  background-color: #2563eb; /* bg-primary-hover */
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}

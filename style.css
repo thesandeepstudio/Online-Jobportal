@@ -1,0 +1,153 @@
+/* --- 1. DESIGN TOKENS --- */
+:root {
+  --primary: #407bff;
+  --primary-hover: #2563eb;
+  --secondary: #1e293b;
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --bg-white: #ffffff;
+  --bg-gray: #f9fafb;
+  --accent-blue: #eff6ff;
+
+  --container-max: 1280px;
+  --radius-lg: 0.5rem;
+  --radius-2xl: 1rem;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(64, 123, 255, 0.15);
+}
+
+/* --- 2. BASE RESET --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--text-main);
+  background-color: var(--bg-white);
+  line-height: 1.5;
+}
+a {
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+/* --- 3. LAYOUT --- */
+.container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* --- 4. LEFT-ALIGNED NAVBAR --- */
+.navbar {
+  background: white;
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 80px;
+}
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  height: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.logo-icon {
+  width: 35px;
+  height: 35px;
+  background: var(--primary);
+  color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.025em;
+}
+.nav-links-group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --- 5. BUTTONS (Used for Login, Get Started, Employer) --- */
+.btn {
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  display: inline-block;
+  cursor: pointer;
+  border: none;
+  font-size: 0.95rem;
+  text-align: center;
+}
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+.btn-outline {
+  background: white;
+  border: 1px solid #e5e7eb;
+  color: var(--text-main);
+}
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* --- 6. FOOTER --- */
+footer {
+  background: var(--secondary);
+  color: white;
+  padding: 3rem 0;
+}
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.footer-brand p {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.85rem;
+}
+.footer-links a {
+  color: #9ca3af;
+}
+.footer-links a:hover {
+  color: white;
+}

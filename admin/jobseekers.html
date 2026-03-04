@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin - Job Seeker Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#407bff",
+              secondary: "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-100 font-sans antialiased">
+    <div
+      id="sidebarOverlay"
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden transition-opacity"
+    ></div>
+
+    <div class="flex h-screen overflow-hidden">
+      <aside
+        id="sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-secondary text-white flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex"
+      >
+        <div
+          class="h-16 flex items-center justify-between px-4 border-b border-gray-700"
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg"
+            >
+              J
+            </div>
+            <span class="text-2xl font-bold text-white tracking-tight"
+              >JobPortal</span
+            >
+          </div>
+          <button
+            id="closeSidebar"
+            class="md:hidden text-gray-400 hover:text-white"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <nav class="flex-1 px-2 py-6 space-y-2">
+          <a
+            href="dashboard.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-chart-line w-6"></i>
+            <span class="font-medium">Dashboard</span>
+          </a>
+          <a
+            href="jobseekers.html"
+            class="flex items-center px-4 py-3 bg-primary rounded-lg text-white shadow-lg shadow-blue-900/50"
+          >
+            <i class="fas fa-user-graduate w-6"></i>
+            <span>Job Seekers</span>
+          </a>
+          <a
+            href="companies.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-building w-6"></i>
+            <span>Companies</span>
+          </a>
+          <a
+            href="jobs.html"
+            class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white rounded-lg transition"
+          >
+            <i class="fas fa-briefcase w-6"></i>
+            <span>Jobs</span>
+          </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-700">
+          <button
+            id="logoutBtn"
+            class="flex items-center w-full px-4 py-2 text-red-400 hover:bg-gray-700 rounded-lg transition"
+          >
+            <i class="fas fa-sign-out-alt w-6"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="flex-1 flex flex-col overflow-y-auto">
+        <header
+          class="h-16 bg-white shadow-sm flex items-center justify-between px-6 sticky top-0 z-10"
+        >
+          <div class="flex items-center gap-4">
+            <button
+              id="openSidebar"
+              class="md:hidden text-gray-600 focus:outline-none"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h2 class="text-lg md:text-xl font-bold text-gray-800">
+              Job Seeker Management
+            </h2>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold"
+              >
+                A
+              </div>
+              <span class="text-sm font-medium text-gray-700 hidden sm:block"
+                >Admin</span
+              >
+            </div>
+          </div>
+        </header>
+
+        <main class="p-4 md:p-6">
+          <div
+            class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4"
+          >
+            <div class="relative w-full max-w-md">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by Name or Skills..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white shadow-sm"
+              />
+              <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+            <div class="text-sm text-gray-500">
+              Total Candidates:
+              <span id="total-count" class="font-bold text-gray-800">0</span>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse min-w-[850px]">
+                <thead
+                  class="bg-gray-50 text-gray-600 text-xs uppercase font-semibold"
+                >
+                  <tr>
+                    <th class="px-6 py-3">Candidate</th>
+                    <th class="px-6 py-3">Skills</th>
+                    <th class="px-6 py-3">Experience / Education</th>
+                    <th class="px-6 py-3">Contact</th>
+                    <th class="px-6 py-3">Joined</th>
+                    <th class="px-6 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="seekers-table-body"
+                  class="text-gray-700 text-sm divide-y divide-gray-100"
+                >
+                  <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                      <i class="fas fa-spinner fa-spin mr-2"></i> Loading
+                      candidates...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div
+      id="profileModal"
+      class="fixed inset-0 bg-gray-900 bg-opacity-60 hidden flex items-center justify-center z-[60] backdrop-blur-md p-4"
+    >
+      <div
+        class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300 relative"
+        id="profileContent"
+      >
+        <button
+          onclick="closeModal()"
+          class="absolute top-4 right-4 bg-white/80 hover:bg-white p-2 rounded-full shadow-sm z-10 transition"
+        >
+          <i class="fas fa-times text-gray-600"></i>
+        </button>
+
+        <div class="h-32 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+        <div class="px-8 pb-8 -mt-12 relative">
+          <div class="w-24 h-24 bg-white rounded-full p-1 shadow-lg mb-4">
+            <img
+              id="prof-avatar-img"
+              src=""
+              class="w-full h-full rounded-full object-cover hidden bg-white"
+            />
+            <div
+              id="prof-avatar-initial"
+              class="w-full h-full bg-gray-100 rounded-full flex items-center justify-center text-3xl font-bold text-gray-400"
+            >
+              U
+            </div>
+          </div>
+
+          <div class="flex justify-between items-start mb-6">
+            <div>
+              <h2 class="text-2xl font-bold text-gray-900" id="prof-name">
+                Name
+              </h2>
+              <p class="text-gray-500" id="prof-headline">Job Seeker</p>
+              <div
+                class="mt-2 flex flex-wrap items-center gap-4 text-sm text-gray-600"
+              >
+                <span id="prof-phone"
+                  ><i class="fas fa-phone mr-1"></i> ...</span
+                >
+                <span id="prof-email"
+                  ><i class="fas fa-envelope mr-1"></i> ...</span
+                >
+              </div>
+            </div>
+            <a
+              id="prof-email-link"
+              href="#"
+              target="_blank"
+              class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md hover:bg-blue-600 transition"
+              >Send Email</a
+            >
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="bg-gray-50 p-4 rounded-xl">
+              <span class="text-xs font-bold text-gray-400 uppercase"
+                >Experience</span
+              >
+              <p class="font-medium text-gray-800" id="prof-exp">N/A</p>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-xl">
+              <span class="text-xs font-bold text-gray-400 uppercase"
+                >Education</span
+              >
+              <p class="font-medium text-gray-800" id="prof-edu">N/A</p>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <span class="text-xs font-bold text-gray-400 uppercase">Bio</span>
+            <p class="text-gray-600 mt-1 leading-relaxed text-sm" id="prof-bio">
+              No bio available.
+            </p>
+          </div>
+
+          <div>
+            <span class="text-xs font-bold text-gray-400 uppercase block mb-2"
+              >Skills</span
+            >
+            <div class="flex flex-wrap gap-2" id="prof-skills"></div>
+          </div>
+        </div>
+
+        <div
+          class="bg-gray-50 px-8 py-4 border-t border-gray-100 flex justify-end"
+        >
+          <button
+            onclick="closeModal()"
+            class="px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let allSeekers = [];
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // --- RESPONSIVE SIDEBAR LOGIC ---
+        const sidebar = document.getElementById("sidebar");
+        const openSidebarBtn = document.getElementById("openSidebar");
+        const closeSidebarBtn = document.getElementById("closeSidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+        const toggleSidebar = () => {
+          sidebar.classList.toggle("-translate-x-full");
+          sidebarOverlay.classList.toggle("hidden");
+          document.body.classList.toggle("overflow-hidden");
+        };
+
+        if (openSidebarBtn)
+          openSidebarBtn.addEventListener("click", toggleSidebar);
+        if (closeSidebarBtn)
+          closeSidebarBtn.addEventListener("click", toggleSidebar);
+        if (sidebarOverlay)
+          sidebarOverlay.addEventListener("click", toggleSidebar);
+
+        loadSeekers();
+
+        // Search Listener
+        document
+          .getElementById("searchInput")
+          .addEventListener("keyup", (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allSeekers.filter(
+              (s) =>
+                (s.first_name && s.first_name.toLowerCase().includes(term)) ||
+                (s.last_name && s.last_name.toLowerCase().includes(term)) ||
+                (s.skills && s.skills.toLowerCase().includes(term)),
+            );
+            renderTable(filtered);
+          });
+
+        // Logout
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", async () => {
+            if (confirm("Are you sure you want to logout?")) {
+              await fetch("../api/logout.php");
+              window.location.href = "login.html";
+            }
+          });
+      });
+
+      async function loadSeekers() {
+        try {
+          const res = await fetch(
+            `../api/admin/jobseekers.php?t=${new Date().getTime()}`,
+          );
+          if (!res.ok) throw new Error("HTTP Status: " + res.status);
+          const response = await res.json();
+
+          if (response.message === "Unauthorized") {
+            window.location.href = "login.html";
+            return;
+          }
+
+          if (response.status) {
+            allSeekers = response.data;
+            document.getElementById("total-count").innerText =
+              allSeekers.length;
+            renderTable(allSeekers);
+          } else {
+            document.getElementById("seekers-table-body").innerHTML =
+              `<tr><td colspan="6" class="px-6 py-4 text-center">No job seekers found.</td></tr>`;
+          }
+        } catch (err) {
+          document.getElementById("seekers-table-body").innerHTML =
+            `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Failed to load data.</td></tr>`;
+        }
+      }
+
+      async function openProfileModal(userId) {
+        document.getElementById("prof-name").innerText = "Loading...";
+        document.getElementById("prof-avatar-img").classList.add("hidden");
+        document
+          .getElementById("prof-avatar-initial")
+          .classList.remove("hidden");
+        document.getElementById("prof-avatar-initial").innerText = "...";
+        toggleModal("profileModal", true);
+
+        try {
+          const res = await fetch(`../api/users/get_profile.php?id=${userId}`);
+          const result = await res.json();
+
+          if (result.status) {
+            const p = result.data;
+            document.getElementById("prof-name").innerText =
+              `${p.first_name} ${p.last_name}`;
+            document.getElementById("prof-email-link").href =
+              `mailto:${p.email}`;
+            document.getElementById("prof-email").innerHTML =
+              `<i class="fas fa-envelope mr-1"></i> ${p.email}`;
+            document.getElementById("prof-phone").innerHTML = p.mobile
+              ? `<i class="fas fa-phone mr-1"></i> ${p.mobile}`
+              : `<span class="text-gray-400 italic">No mobile</span>`;
+
+            if (p.profile_pic) {
+              document.getElementById("prof-avatar-img").src =
+                "../api/" + p.profile_pic;
+              document
+                .getElementById("prof-avatar-img")
+                .classList.remove("hidden");
+              document
+                .getElementById("prof-avatar-initial")
+                .classList.add("hidden");
+            } else {
+              document.getElementById("prof-avatar-initial").innerText =
+                p.first_name.charAt(0);
+            }
+
+            document.getElementById("prof-exp").innerText =
+              p.experience || "Fresher";
+            document.getElementById("prof-edu").innerText =
+              p.education || "N/A";
+            document.getElementById("prof-bio").innerText =
+              p.bio || "No bio provided.";
+
+            const skillsContainer = document.getElementById("prof-skills");
+            skillsContainer.innerHTML = "";
+            if (p.skills) {
+              p.skills.split(",").forEach((s) => {
+                skillsContainer.innerHTML += `<span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-300 font-medium">${s.trim()}</span>`;
+              });
+            } else {
+              skillsContainer.innerHTML =
+                "<span class='text-gray-400 text-sm'>No specific skills listed.</span>";
+            }
+          }
+        } catch (err) {
+          alert("Server Error");
+          closeModal();
+        }
+      }
+
+      async function deleteUser(id) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this user? This cannot be undone.",
+          )
+        )
+          return;
+        try {
+          const res = await fetch("../api/admin/delete_user.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: id }),
+          });
+          const result = await res.json();
+          if (result.status) {
+            alert("User Deleted");
+            loadSeekers();
+          } else {
+            alert(result.message);
+          }
+        } catch (err) {
+          alert("Server Error");
+        }
+      }
+
+      function toggleModal(id, show) {
+        const modal = document.getElementById(id);
+        const content = document.getElementById("profileContent");
+        if (show) {
+          modal.classList.remove("hidden");
+          setTimeout(() => {
+            content.classList.remove("scale-95", "opacity-0");
+            content.classList.add("scale-100", "opacity-100");
+          }, 10);
+        } else {
+          content.classList.remove("scale-100", "opacity-100");
+          content.classList.add("scale-95", "opacity-0");
+          setTimeout(() => modal.classList.add("hidden"), 300);
+        }
+      }
+
+      function closeModal() {
+        toggleModal("profileModal", false);
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById("seekers-table-body");
+        tbody.innerHTML = "";
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">No matching candidates found.</td></tr>`;
+          return;
+        }
+
+        data.forEach((s) => {
+          const initial = s.first_name
+            ? s.first_name.charAt(0).toUpperCase()
+            : "U";
+          const fullName = `${s.first_name} ${s.last_name}`;
+          let skillsHtml =
+            '<span class="text-gray-400 text-xs">No skills listed</span>';
+          if (s.skills) {
+            skillsHtml = s.skills
+              .split(",")
+              .slice(0, 3)
+              .map(
+                (skill) =>
+                  `<span class="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-0.5 rounded text-[10px] mr-1">${skill.trim()}</span>`,
+              )
+              .join("");
+            if (s.skills.split(",").length > 3)
+              skillsHtml += `<span class="text-[10px] text-gray-400 ml-1">+more</span>`;
+          }
+
+          const tr = document.createElement("tr");
+          tr.className =
+            "hover:bg-gray-50 transition border-b border-gray-100 group";
+          tr.innerHTML = `
+            <td class="px-6 py-4 cursor-pointer" onclick="openProfileModal(${s.user_id})">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold text-lg border border-green-200">${initial}</div>
+                <div><div class="font-bold text-gray-800 group-hover:text-primary transition">${fullName}</div></div>
+              </div>
+            </td>
+            <td class="px-6 py-4"><div class="flex flex-wrap gap-y-1">${skillsHtml}</div></td>
+            <td class="px-6 py-4">
+              <div class="text-gray-800 font-medium text-xs">${s.experience || "Fresher"}</div>
+              <div class="text-xs text-gray-400 truncate max-w-[150px]">${s.education || "Edu N/A"}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-gray-600 text-xs"><i class="fas fa-envelope mr-1"></i> ${s.email}</div>
+              <div class="text-gray-500 text-xs mt-1"><i class="fas fa-phone mr-1"></i> ${s.mobile || "N/A"}</div>
+            </td>
+            <td class="px-6 py-4 text-gray-500 text-xs">${new Date(s.created_at).toLocaleDateString()}</td>
+            <td class="px-6 py-4 text-right">
+              <button onclick="openProfileModal(${s.user_id})" class="text-blue-400 hover:text-blue-600 transition p-2"><i class="fas fa-eye"></i></button>
+              <button onclick="deleteUser(${s.user_id})" class="text-gray-400 hover:text-red-500 transition p-2"><i class="fas fa-trash-alt"></i></button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    </script>
+  </body>
+</html>
